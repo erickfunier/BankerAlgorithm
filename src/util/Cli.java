@@ -27,7 +27,7 @@ public class Cli {
         }
         for(int processo = 0; processo < processos; processo++) {
             if (usedProcess == processo)
-                System.out.print("\n\033[3m\033[4mP"+processo+"\033[0m");
+                System.out.print("\n\033[3m\033[4mP"+mtxClaimC.get(processo).getId()+"\033[0m");
             else
                 System.out.print("\nP" + mtxClaimC.get(processo).getId());
             for (int recurso = 0; recurso < recursos; recurso++) {

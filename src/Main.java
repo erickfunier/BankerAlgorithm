@@ -1,3 +1,4 @@
+import domain.BankerObj;
 import domain.ProcessObj;
 import util.Cli;
 import util.FileDataInput;
@@ -6,7 +7,41 @@ import java.util.*;
 
 public class Main {
 
+    private static BankerObj loadInstance(FileDataInput fileDataInput, Cli cli, BankerObj bankerObj) {
+        for (int processo = 0; processo < bankerObj.getProcesses(); processo++) {
+            String[] mtxLineArr = fileDataInput.getLine().split(" ");
+            bankerObj.addMtxClaimC(new ProcessObj(bankerObj.getIdCounter(), new int[bankerObj.getResources()]));
+            bankerObj.incIdCounter();
+            for (int recurso = 0; recurso < bankerObj.getResources(); recurso++) {
+                bankerObj.getMtxClaimC().get(processo).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
+            }
+        }
 
+        for (int processo = 0; processo < bankerObj.getProcesses(); processo++) {
+            String[] mtxLineArr = fileDataInput.getLine().split(" ");
+            bankerObj.addMtxAllocationA(new ProcessObj(bankerObj.getIdCounter1(), new int[bankerObj.getResources()]));
+            bankerObj.addMtxNeedCA(new ProcessObj(bankerObj.getIdCounter1(), new int[bankerObj.getResources()]));
+            bankerObj.incIdCounter1();
+            for (int recurso = 0; recurso < bankerObj.getResources(); recurso++) {
+                bankerObj.getMtxAllocationA().get(processo).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
+                bankerObj.getMtxNeedCA().get(processo).setResource(recurso,bankerObj.getMtxClaimC().get(processo).getResource(recurso) -
+                        bankerObj.getMtxAllocationA().get(processo).getResource(recurso));
+                bankerObj.incAvailableResources(recurso, bankerObj.getMtxAllocationA().get(processo).getResource(recurso));
+            }
+
+        }
+
+        for (int recurso = 0; recurso < bankerObj.getResources(); recurso++)
+            bankerObj.decAvailableResource(recurso,
+                    bankerObj.getMaxResource(recurso) - bankerObj.getAvailableResource(recurso));
+
+        cli.printMessage("\n\nQuantidade de cada recurso disponivel no momento: \n");
+        cli.printVector("R", bankerObj.getAvailableResources());
+        cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(), bankerObj.getMtxNeedCA(),
+                bankerObj.getResources(), bankerObj.getProcesses(), -1);
+
+        return bankerObj;
+    }
 
     public static void main(String[] args) throws NumberFormatException{
         FileDataInput fileDataInput = new FileDataInput("starterFile.txt", "runtimeFile.txt");
@@ -20,11 +55,11 @@ public class Main {
         int resources = fileDataInput.getInt();
         cli.printMessage("\nNumero de recursos: " + resources);
 
-        int[] recursosDisponiveis = new int[resources];
+        //int[] recursosDisponiveis = new int[resources];
         int[] maxRecursos = new int[resources];
-        List<ProcessObj> mtxAllocationA = new ArrayList<>();
+        /*List<ProcessObj> mtxAllocationA = new ArrayList<>();
         List<ProcessObj> mtxClaimC = new ArrayList<>();
-        List<ProcessObj> mtxNeedCA = new ArrayList<>();
+        List<ProcessObj> mtxNeedCA = new ArrayList<>();*/
         StringBuilder safeSequence = new StringBuilder();
 
         for (int i = 0; i < resources; i++) {
@@ -34,34 +69,9 @@ public class Main {
         cli.printMessage("\nQuantidade maxima de cada recurso disponivel: \n");
         cli.printVector("R", maxRecursos);
 
-        for (int processo = 0; processo < processes; processo++) {
-            String[] mtxLineArr = fileDataInput.getLine().split(" ");
-            mtxClaimC.add(new ProcessObj(idCounter, new int[resources]));
-            idCounter++;
-            for (int recurso = 0; recurso < resources; recurso++) {
-                mtxClaimC.get(processo).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
-            }
-        }
+        BankerObj bankerObj = new BankerObj(processes, resources, maxRecursos);
 
-        for (int processo = 0; processo < processes; processo++) {
-            String[] mtxLineArr = fileDataInput.getLine().split(" ");
-            mtxAllocationA.add(new ProcessObj(idCounter1, new int[resources]));
-            mtxNeedCA.add(new ProcessObj(idCounter1, new int[resources]));
-            idCounter1++;
-            for (int recurso = 0; recurso < resources; recurso++) {
-                mtxAllocationA.get(processo).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
-                mtxNeedCA.get(processo).setResource(recurso,(mtxClaimC.get(processo).getResource(recurso) -
-                        mtxAllocationA.get(processo).getResource(recurso)));
-                recursosDisponiveis[recurso] += mtxAllocationA.get(processo).getResource(recurso);
-            }
-
-        }
-        for (int recurso = 0; recurso < resources; recurso++)
-            recursosDisponiveis[recurso] = maxRecursos[recurso] - recursosDisponiveis[recurso];
-
-        cli.printMessage("\n\nQuantidade de cada recurso disponivel no momento: \n");
-        cli.printVector("R", recursosDisponiveis);
-        cli.printSystemStatus(mtxClaimC, mtxAllocationA, mtxNeedCA, resources, processes, -1);
+        loadInstance(fileDataInput, cli, bankerObj);
 
         boolean[] encerradoTemp = new boolean[processes];
         Arrays.fill(encerradoTemp, Boolean.FALSE);
@@ -80,7 +90,7 @@ public class Main {
                     int recurso;
 
                     for(recurso = 0; recurso < resources; recurso++) {
-                        if(mtxNeedCA.get(processo).getResource(recurso) > recursosDisponiveis[recurso]) {
+                        if(bankerObj.getMtxNeedCA().get(processo).getResource(recurso) > bankerObj.getAvailableResource(recurso)) {
                             break; //No allocation
                         }
                     }
@@ -88,19 +98,18 @@ public class Main {
                     //If all processes are allocated
                     if(recurso == resources) {
                         cli.printMessage("\n\nQuantidade de cada recurso disponivel no momento: \n");
-                        cli.printVector("R", recursosDisponiveis);
-                        cli.printSystemStatus(mtxClaimC, mtxAllocationA, mtxNeedCA, resources, processes, processo);
-                        for(recurso = 0; recurso < resources; recurso++) {
-                            recursosDisponiveis[recurso] += mtxAllocationA.get(processo).getResource(recurso);
+                        cli.printVector("R", bankerObj.getAvailableResources());
+                        cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(), bankerObj.getMtxNeedCA(), resources, processes, processo);
 
-                            if (recursosDisponiveis[recurso] > maxRecursos[recurso])
-                                recursosDisponiveis[recurso] = maxRecursos[recurso];
+                        for(recurso = 0; recurso < resources; recurso++) {
+                            bankerObj.incAvailableResources(recurso, bankerObj.getMtxAllocationA().get(processo).getResource(recurso));
+
+                            if (bankerObj.getAvailableResource(recurso) > maxRecursos[recurso])
+                                bankerObj.setAvailableResource(recurso, maxRecursos[recurso]);
                         }
 
-                        safeSequence.append("P" + mtxAllocationA.get(processo).getId() + ", ");
-                        mtxClaimC.remove(processo);
-                        mtxAllocationA.remove(processo);
-                        mtxNeedCA.remove(processo);
+                        safeSequence.append("P" + bankerObj.getMtxAllocationA().get(processo).getId() + ", ");
+                        bankerObj.removeProcess(processo);
                         processes--;
                         encerrado.add(processo, true);
                         count++;
@@ -113,7 +122,8 @@ public class Main {
 
         for(int i = 0; i < processes; i++) {
             if(!encerrado.get(i)) {
-                cli.printSystemStatus(mtxClaimC, mtxAllocationA, mtxNeedCA, resources, processes, -1);
+                cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
+                        bankerObj.getMtxNeedCA(), resources, processes, -1);
                 cli.printMessage("\nUNSAFE " + safeSequence);
                 return;
             }
