@@ -53,6 +53,7 @@ public class Cli {
             }
             System.out.print("\t|");
         }
+        System.out.print("\n____________________________________________________________________________________");
     }
 
     public void printMessage(String message) {

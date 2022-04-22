@@ -73,8 +73,8 @@ public class BankerObj {
         availableResources[index] += increment;
     }
 
-    public void decAvailableResource(int index, int decrement) {
-        availableResources[index] = decrement;
+    public void decAvailableResources(int index, int decrement) {
+        availableResources[index] -= decrement;
     }
 
     public int getMaxResource(int index) {
@@ -99,4 +99,11 @@ public class BankerObj {
         availableResources[index] = value;
      }
 
+    public void decProcesses() {
+        processes--;
+    }
+
+    public void incProcesses() {
+        processes++;
+    }
 }
