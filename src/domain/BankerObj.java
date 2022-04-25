@@ -5,9 +5,9 @@ import java.util.List;
 
 public class BankerObj {
     private int processes;
-    private int resources;
-    private int[] availableResources;
-    private int[] maxResources;
+    private final int resources;
+    private final int[] availableResources;
+    private final int[] maxResources;
     private List<ProcessObj> mtxAllocationA = new ArrayList<>();
     private List<ProcessObj> mtxClaimC = new ArrayList<>();
     private List<ProcessObj> mtxNeedCA = new ArrayList<>();
