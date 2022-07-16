@@ -10,7 +10,7 @@ public class ThreadRunBanker extends Thread {
     private final Cli cli;
     private final BankerObj bankerObj;
     private boolean safeState;
-    private ThreadNewProcess threadNewProcess;
+    private final ThreadNewProcess threadNewProcess;
     public ThreadRunBanker(Cli cli, BankerObj bankerObj, ThreadNewProcess threadNewProcess) {
         this.cli = cli;
         this.bankerObj = bankerObj;
@@ -21,7 +21,7 @@ public class ThreadRunBanker extends Thread {
     public void run() {
         safeState = true;
 
-        cli.printMessage("\nBANKER iniciado\n");
+        cli.printMessage("\nBANKER started\n");
         while(safeState) {
 
             safeState = checkSafeState(cli, bankerObj);
@@ -34,21 +34,21 @@ public class ThreadRunBanker extends Thread {
             }
 
             if (!safeState && !threadNewProcess.isAlive()) {
-                cli.printMessage("\nQuantidade de cada recurso disponivel no momento: \n");
+                cli.printMessage("\nAvailable resources: \n");
                 cli.printVector("R", bankerObj.getAvailableResources());
                 cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
                         bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), -1);
-                cli.printMessage("\nBANKER encerrado\n");
+                cli.printMessage("\nBANKER finished\n");
                 return;
             } else if (bankerObj.getProcesses() == 0) {
-                cli.printMessage("\nBANKER encerrado\n");
+                cli.printMessage("\nBANKER finished\n");
                 return;
             } else {
-                cli.printMessage("\nQuantidade de cada recurso disponivel no momento: \n");
+                cli.printMessage("\nAvailable resources: \n");
                 cli.printVector("R", bankerObj.getAvailableResources());
                 cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
                         bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), -1);
-                cli.printMessage("\nBANKER aguardando\n");
+                cli.printMessage("\nBANKER waiting\n");
                 safeState = true;
             }
 
@@ -57,7 +57,7 @@ public class ThreadRunBanker extends Thread {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            cli.printMessage("\nBANKER Reiniciado\n");
+            cli.printMessage("\nBANKER restarting\n");
         }
     }
 }

@@ -15,68 +15,68 @@ public class Cli {
     }
 
     public void printSystemStatus(List<ProcessObj> mtxClaimC, List<ProcessObj> mtxAllocationA,
-                                  List<ProcessObj> mtxNeedCA, int recursos, int processos, int usedProcess) {
+                                  List<ProcessObj> mtxNeedCA, int resources, int processes, int usedProcess) {
         System.out.print("\n\n\t\tClaim C\t\t\t\t\t|\tAllocation A\t\t\t|\tNeed C-A\t\t\t\t|\n\t");
-        for (int i = 0, j = 0; j < 3*recursos; i++, j++) {
+        for (int i = 0, j = 0; j < 3*resources; i++, j++) {
             System.out.print("\tR" + i);
-            if (i == recursos-1) {
+            if (i == resources-1) {
                 i = -1;
                 System.out.print("\t|");
             }
 
         }
-        for(int processo = 0; processo < processos; processo++) {
-            if (usedProcess == processo) {
-                System.out.print("\n -->P"+mtxClaimC.get(processo).getId());
+        for(int process = 0; process < processes; process++) {
+            if (usedProcess == process) {
+                System.out.print("\n -->P"+mtxClaimC.get(process).getId());
             } else {
-                System.out.print("\n\tP" + mtxClaimC.get(processo).getId());
+                System.out.print("\n\tP" + mtxClaimC.get(process).getId());
             }
 
-            for (int recurso = 0; recurso < recursos; recurso++) {
-                System.out.print("\t"+mtxClaimC.get(processo).getResource(recurso));
+            for (int resource = 0; resource < resources; resource++) {
+                System.out.print("\t"+mtxClaimC.get(process).getResource(resource));
             }
             System.out.print("\t|");
-            for (int recurso = 0; recurso < recursos; recurso++) {
-                System.out.print("\t"+mtxAllocationA.get(processo).getResource(recurso));
+            for (int resource = 0; resource < resources; resource++) {
+                System.out.print("\t"+mtxAllocationA.get(process).getResource(resource));
             }
             System.out.print("\t|");
-            for (int recurso = 0; recurso < recursos; recurso++) {
-                System.out.print("\t"+mtxNeedCA.get(processo).getResource(recurso));
+            for (int resource = 0; resource < resources; resource++) {
+                System.out.print("\t"+mtxNeedCA.get(process).getResource(resource));
             }
             System.out.print("\t|");
         }
         System.out.print("\n\t____________________________________________________________________________________\n");
     }
 
-    public void printSingleProcess(int processo, List<ProcessObj> mtxClaimC, List<ProcessObj> mtxAllocationA,
-                                   List<ProcessObj> mtxNeedCA, int recursos, int usedProcess) {
+    public void printSingleProcess(int process, List<ProcessObj> mtxClaimC, List<ProcessObj> mtxAllocationA,
+                                   List<ProcessObj> mtxNeedCA, int resources, int usedProcess) {
         System.out.print("\n\n\t\tClaim C\t\t\t\t\t|\tAllocation A\t\t\t|\tNeed C-A\t\t\t\t|\n\t");
-        for (int i = 0, j = 0; j < 3*recursos; i++, j++) {
+        for (int i = 0, j = 0; j < 3*resources; i++, j++) {
             System.out.print("\tR" + i);
-            if (i == recursos-1) {
+            if (i == resources-1) {
                 i = -1;
                 System.out.print("\t|");
             }
 
         }
 
-        if (usedProcess == processo) {
-            System.out.print("\n -->P"+mtxClaimC.get(processo).getId());
+        if (usedProcess == process) {
+            System.out.print("\n -->P"+mtxClaimC.get(process).getId());
         } else {
-            System.out.print("\n\tP" + mtxClaimC.get(processo).getId());
+            System.out.print("\n\tP" + mtxClaimC.get(process).getId());
         }
 
-        for (int recurso = 0; recurso < recursos; recurso++) {
-            System.out.print("\t"+mtxClaimC.get(processo).getResource(recurso));
+        for (int resource = 0; resource < resources; resource++) {
+            System.out.print("\t"+mtxClaimC.get(process).getResource(resource));
         }
         System.out.print("\t|");
-        for (int recurso = 0; recurso < recursos; recurso++) {
-            System.out.print("\t"+mtxAllocationA.get(processo).getResource(recurso));
+        for (int resource = 0; resource < resources; resource++) {
+            System.out.print("\t"+mtxAllocationA.get(process).getResource(resource));
 
         }
         System.out.print("\t|");
-        for (int recurso = 0; recurso < recursos; recurso++) {
-            System.out.print("\t"+mtxNeedCA.get(processo).getResource(recurso));
+        for (int resource = 0; resource < resources; resource++) {
+            System.out.print("\t"+mtxNeedCA.get(process).getResource(resource));
         }
         System.out.print("\t|\n\t____________________________________________________________________________________\n");
     }

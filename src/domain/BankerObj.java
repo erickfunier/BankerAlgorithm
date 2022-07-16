@@ -8,9 +8,9 @@ public class BankerObj {
     private final int resources;
     private final int[] availableResources;
     private final int[] maxResources;
-    private List<ProcessObj> mtxAllocationA = new ArrayList<>();
-    private List<ProcessObj> mtxClaimC = new ArrayList<>();
-    private List<ProcessObj> mtxNeedCA = new ArrayList<>();
+    private final List<ProcessObj> mtxAllocationA = new ArrayList<>();
+    private final List<ProcessObj> mtxClaimC = new ArrayList<>();
+    private final List<ProcessObj> mtxNeedCA = new ArrayList<>();
     private int idCounter = 0;
     private int idCounter1 = 0;
 

@@ -1,8 +1,8 @@
 package domain;
 
 public class ProcessObj {
-    private int id;
-    private int[] resources;
+    private final int id;
+    private final int[] resources;
 
     public ProcessObj(int id, int[] resources) {
         this.id = id;

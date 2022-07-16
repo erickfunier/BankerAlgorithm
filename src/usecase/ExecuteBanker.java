@@ -13,11 +13,11 @@ public class ExecuteBanker {
     public static void executeBanker(Cli cli, BankerObj bankerObj) throws InterruptedException {
         StringBuilder safeSequence = new StringBuilder();
 
-        boolean[] encerradoTemp = new boolean[bankerObj.getProcesses()];
-        Arrays.fill(encerradoTemp, Boolean.FALSE);
-        List<Boolean> encerrado = new ArrayList<>();
-        for (boolean bol : encerradoTemp) {
-            encerrado.add(bol);
+        boolean[] finishedTemp = new boolean[bankerObj.getProcesses()];
+        Arrays.fill(finishedTemp, Boolean.FALSE);
+        List<Boolean> finished = new ArrayList<>();
+        for (boolean bol : finishedTemp) {
+            finished.add(bol);
         }
 
         boolean allProcessChecked = true;
@@ -26,8 +26,8 @@ public class ExecuteBanker {
 
         while(allProcessChecked) {
             allProcessChecked = false;
-            for(int processo = 0; processo < bankerObj.getProcesses(); processo++) {
-                if(!encerrado.get(processo)) {
+            for(int process = 0; process < bankerObj.getProcesses(); process++) {
+                if(!finished.get(process)) {
                     if (newProcessAdded) {
                         boolean unsafe = checkSafeState(cli, bankerObj);
                         if (!unsafe)
@@ -35,70 +35,70 @@ public class ExecuteBanker {
                         newProcessAdded = false;
                     }
 
-                    int recurso;
+                    int resources;
 
-                    for(recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-                        if(bankerObj.getMtxNeedCA().get(processo).getResource(recurso) > bankerObj.getAvailableResource(recurso)) {
+                    for(resources = 0; resources < bankerObj.getResources(); resources++) {
+                        if(bankerObj.getMtxNeedCA().get(process).getResource(resources) > bankerObj.getAvailableResource(resources)) {
                             break;
                         }
                     }
 
-                    if(recurso == bankerObj.getResources()) {
-                        cli.printMessage("Quantidade de cada recurso disponivel no momento: \n");
+                    if(resources == bankerObj.getResources()) {
+                        cli.printMessage("Available resources: \n");
                         cli.printVector("R", bankerObj.getAvailableResources());
                         cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
-                                bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), processo);
+                                bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), process);
 
-                        safeSequence.append("P").append(bankerObj.getMtxAllocationA().get(processo).getId()).append(", ");
-                        cli.printMessage("\n--> P" + bankerObj.getMtxAllocationA().get(processo).getId() + " em execucao\n");
+                        safeSequence.append("P").append(bankerObj.getMtxAllocationA().get(process).getId()).append(", ");
+                        cli.printMessage("\n--> P" + bankerObj.getMtxAllocationA().get(process).getId() + " executing\n");
 
-                        for(recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-                            bankerObj.setAvailableResource(recurso,
-                                    bankerObj.getAvailableResource(recurso) -
-                                            bankerObj.getMtxNeedCA().get(processo).getResource(recurso));
-                            bankerObj.getMtxAllocationA().get(processo).setResource(recurso,
-                                    bankerObj.getMtxAllocationA().get(processo).getResource(recurso) +
-                                            bankerObj.getMtxNeedCA().get(processo).getResource(recurso));
-                            bankerObj.getMtxNeedCA().get(processo).setResource(recurso, 0);
+                        for(resources = 0; resources < bankerObj.getResources(); resources++) {
+                            bankerObj.setAvailableResource(resources,
+                                    bankerObj.getAvailableResource(resources) -
+                                            bankerObj.getMtxNeedCA().get(process).getResource(resources));
+                            bankerObj.getMtxAllocationA().get(process).setResource(resources,
+                                    bankerObj.getMtxAllocationA().get(process).getResource(resources) +
+                                            bankerObj.getMtxNeedCA().get(process).getResource(resources));
+                            bankerObj.getMtxNeedCA().get(process).setResource(resources, 0);
                         }
 
-                        cli.printMessage("\nQuantidade de cada recurso disponivel no momento: \n");
+                        cli.printMessage("\nAvailable resources: \n");
                         cli.printVector("R", bankerObj.getAvailableResources());
                         cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
-                                bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), processo);
+                                bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), process);
 
                         Thread.sleep(10000);
                         if (bankerObj.getProcesses() > startedProcesses)
                             newProcessAdded = true;
-                        cli.printMessage("\n--> P" + bankerObj.getMtxAllocationA().get(processo).getId() + " terminou execucao\n\n");
+                        cli.printMessage("\n--> P" + bankerObj.getMtxAllocationA().get(process).getId() + " executed\n\n");
 
-                        for(recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-                            bankerObj.incAvailableResources(recurso, bankerObj.getMtxClaimC().get(processo).getResource(recurso));
+                        for(resources = 0; resources < bankerObj.getResources(); resources++) {
+                            bankerObj.incAvailableResources(resources, bankerObj.getMtxClaimC().get(process).getResource(resources));
 
-                            if (bankerObj.getAvailableResource(recurso) > bankerObj.getMaxResource(recurso))
-                                bankerObj.setAvailableResource(recurso, bankerObj.getMaxResource(recurso));
+                            if (bankerObj.getAvailableResource(resources) > bankerObj.getMaxResource(resources))
+                                bankerObj.setAvailableResource(resources, bankerObj.getMaxResource(resources));
                         }
 
-                        bankerObj.removeProcess(processo);
+                        bankerObj.removeProcess(process);
                         bankerObj.decProcesses();
-                        encerrado.add(processo, true);
+                        finished.add(process, true);
                         allProcessChecked = true;
                         startedProcesses = bankerObj.getProcesses();
 
                         if (newProcessAdded)
-                            processo = 0;
+                            process = 0;
                     }
                 }
 
-                if (encerrado.get(processo)) {
-                    encerrado.remove(processo);
+                if (finished.get(process)) {
+                    finished.remove(process);
                 }
 
             }
         }
 
         for(int i = 0; i < bankerObj.getProcesses(); i++) {
-            if(!encerrado.get(i)) {
+            if(!finished.get(i)) {
                 cli.printSystemStatus(bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
                         bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses(), -1);
                 cli.printMessage("\nUNSAFE State " + safeSequence);
@@ -106,6 +106,6 @@ public class ExecuteBanker {
             }
         }
 
-        cli.printMessage("SAFE State a sequência executada foi: " + safeSequence);
+        cli.printMessage("SAFE State executed sequence: " + safeSequence);
     }
 }

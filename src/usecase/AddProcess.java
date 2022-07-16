@@ -11,20 +11,20 @@ public class AddProcess {
         bankerObj.addMtxClaimC(new ProcessObj(bankerObj.getIdCounter(), new int[bankerObj.getResources()]));
         bankerObj.incProcesses();
         bankerObj.incIdCounter();
-        for (int recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-            bankerObj.getMtxClaimC().get(bankerObj.getProcesses()-1).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
+        for (int resource = 0; resource < bankerObj.getResources(); resource++) {
+            bankerObj.getMtxClaimC().get(bankerObj.getProcesses()-1).setResource(resource, Integer.parseInt(mtxLineArr[resource]));
         }
 
         mtxLineArr = fileDataInput.getLine().split(" ");
         bankerObj.addMtxAllocationA(new ProcessObj(bankerObj.getIdCounter1(), new int[bankerObj.getResources()]));
         bankerObj.addMtxNeedCA(new ProcessObj(bankerObj.getIdCounter1(), new int[bankerObj.getResources()]));
         bankerObj.incIdCounter1();
-        for (int recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-            bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).setResource(recurso, Integer.parseInt(mtxLineArr[recurso]));
-            bankerObj.getMtxNeedCA().get(bankerObj.getProcesses()-1).setResource(recurso,
-                    bankerObj.getMtxClaimC().get(bankerObj.getProcesses()-1).getResource(recurso) -
-                            bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).getResource(recurso));
-            bankerObj.decAvailableResources(recurso, bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).getResource(recurso));
+        for (int resource = 0; resource < bankerObj.getResources(); resource++) {
+            bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).setResource(resource, Integer.parseInt(mtxLineArr[resource]));
+            bankerObj.getMtxNeedCA().get(bankerObj.getProcesses()-1).setResource(resource,
+                    bankerObj.getMtxClaimC().get(bankerObj.getProcesses()-1).getResource(resource) -
+                            bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).getResource(resource));
+            bankerObj.decAvailableResources(resource, bankerObj.getMtxAllocationA().get(bankerObj.getProcesses()-1).getResource(resource));
         }
         cli.printSingleProcess((bankerObj.getProcesses()-1), bankerObj.getMtxClaimC(), bankerObj.getMtxAllocationA(),
                 bankerObj.getMtxNeedCA(), bankerObj.getResources(), bankerObj.getProcesses());

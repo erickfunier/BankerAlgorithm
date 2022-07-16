@@ -8,28 +8,29 @@ import static usecase.LoadProcesses.loadInstance;
 
 public class Main {
     public static void main(String[] args) throws NumberFormatException{
-        String starterFileName = "caso2/starterFile.txt";
-        String runtimeFileName = "caso2/runtimeFile.txt";
+        // change the following paths to use other cases
+        String starterFileName = "case2/starterFile.txt";
+        String runtimeFileName = "case2/runtimeFile.txt";
 
         FileDataInput fileDataInput = new FileDataInput(runtimeFileName, starterFileName);
         Cli cli = new Cli();
 
         int processes = fileDataInput.getInt();
-        cli.printMessage("Numero de processos: " + processes);
+        cli.printMessage("Number of process: " + processes);
 
         int resources = fileDataInput.getInt();
-        cli.printMessage("\nNumero de recursos: " + resources);
+        cli.printMessage("\nNumber of resources: " + resources);
 
-        int[] maxRecursos = new int[resources];
+        int[] maxResources = new int[resources];
 
-        for (int recurso = 0; recurso < resources; recurso++) {
-            maxRecursos[recurso] = fileDataInput.getInt();
+        for (int resource = 0; resource < resources; resource++) {
+            maxResources[resource] = fileDataInput.getInt();
         }
 
-        cli.printMessage("\nQuantidade maxima de cada recurso disponivel: \n");
-        cli.printVector("R", maxRecursos);
+        cli.printMessage("\nMaximum available resources: \n");
+        cli.printVector("R", maxResources);
 
-        BankerObj bankerObj = new BankerObj(processes, resources, maxRecursos);
+        BankerObj bankerObj = new BankerObj(processes, resources, maxResources);
 
         loadInstance(fileDataInput, cli, bankerObj);
 

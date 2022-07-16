@@ -23,14 +23,14 @@ public class ThreadNewProcess extends Thread {
         while(counter > 0) {
             try {
                 Thread.sleep(15000);
-                cli.printMessage("\n----------- Adicionando um novo processo -----------");
+                cli.printMessage("\n----------- Adding a new process -----------");
                 addInstance(fileDataInput, cli, bankerObj);
 
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             counter--;
-            cli.printMessage("\n----------- Novo processo adicionado -----------\n");
+            cli.printMessage("\n----------- New process added -----------\n");
         }
     }
 }

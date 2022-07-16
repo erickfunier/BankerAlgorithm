@@ -15,66 +15,66 @@ public class CheckSafeState {
         List<ProcessObj> tempMtxNeedCA = new ArrayList<>(bankerObj.getMtxNeedCA());
         List<ProcessObj> tempMtxClaimC = new ArrayList<>(bankerObj.getMtxClaimC());
         int[] tempAvailableResources = bankerObj.getAvailableResources().clone();
-        int processos = bankerObj.getProcesses();
+        int processes = bankerObj.getProcesses();
 
-        boolean[] encerradoTemp = new boolean[bankerObj.getProcesses()];
-        Arrays.fill(encerradoTemp, Boolean.FALSE);
-        List<Boolean> encerrado = new ArrayList<>();
-        for (boolean bol : encerradoTemp) {
-            encerrado.add(bol);
+        boolean[] finishedTemp = new boolean[bankerObj.getProcesses()];
+        Arrays.fill(finishedTemp, Boolean.FALSE);
+        List<Boolean> finished = new ArrayList<>();
+        for (boolean bol : finishedTemp) {
+            finished.add(bol);
         }
 
         boolean allProcessChecked = true;
 
         while(allProcessChecked) {
             allProcessChecked = false;
-            for(int processo = 0; processo < processos; processo++) {
-                if(!encerrado.get(processo)) {
-                    int recurso;
+            for(int process = 0; process < processes; process++) {
+                if(!finished.get(process)) {
+                    int resource;
 
-                    for(recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-                        if(tempMtxNeedCA.get(processo).getResource(recurso) > tempAvailableResources[recurso]) {
+                    for(resource = 0; resource < bankerObj.getResources(); resource++) {
+                        if(tempMtxNeedCA.get(process).getResource(resource) > tempAvailableResources[resource]) {
                             break;
                         }
                     }
 
-                    if(recurso == bankerObj.getResources()) {
+                    if(resource == bankerObj.getResources()) {
 
-                        for(recurso = 0; recurso < bankerObj.getResources(); recurso++) {
-                            tempAvailableResources[recurso] += tempMtxAllocationA.get(processo).getResource(recurso);
+                        for(resource = 0; resource < bankerObj.getResources(); resource++) {
+                            tempAvailableResources[resource] += tempMtxAllocationA.get(process).getResource(resource);
 
-                            if (tempAvailableResources[recurso] > bankerObj.getMaxResource(recurso))
-                                tempAvailableResources[recurso] = bankerObj.getMaxResource(recurso);
+                            if (tempAvailableResources[resource] > bankerObj.getMaxResource(resource))
+                                tempAvailableResources[resource] = bankerObj.getMaxResource(resource);
                         }
 
-                        safeSequence.append("P").append(tempMtxAllocationA.get(processo).getId()).append(", ");
-                        tempMtxAllocationA.remove(processo);
-                        tempMtxClaimC.remove(processo);
-                        tempMtxNeedCA.remove(processo);
-                        processos--;
-                        encerrado.add(processo, true);
+                        safeSequence.append("P").append(tempMtxAllocationA.get(process).getId()).append(", ");
+                        tempMtxAllocationA.remove(process);
+                        tempMtxClaimC.remove(process);
+                        tempMtxNeedCA.remove(process);
+                        processes--;
+                        finished.add(process, true);
                         allProcessChecked = true;
 
                     }
                 }
 
-                if (encerrado.get(processo))
-                    encerrado.remove(processo);
+                if (finished.get(process))
+                    finished.remove(process);
 
             }
         }
 
-        for(int i = 0; i < processos; i++) {
-            if(!encerrado.get(i)) {
+        for(int i = 0; i < processes; i++) {
+            if(!finished.get(i)) {
                 if (safeSequence.length() > 0)
-                    cli.printMessage("UNSAFE State a sequencia maxima a ser executada é: " + safeSequence);
+                    cli.printMessage("UNSAFE State the maximum sequence to be executed is: " + safeSequence);
                 else
-                    cli.printMessage("UNSAFE Nao eh possivel executar nenhum processo\n" + safeSequence);
+                    cli.printMessage("UNSAFE no one process can be executed\n" + safeSequence);
                 return false;
             }
         }
 
-        cli.printMessage("SAFE State a sequência a ser executada  é: " + safeSequence.substring(0,
+        cli.printMessage("SAFE State the sequence to be executed is: " + safeSequence.substring(0,
                 safeSequence.length()-2) + "\n");
         return true;
     }
